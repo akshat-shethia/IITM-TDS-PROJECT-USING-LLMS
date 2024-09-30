@@ -67,19 +67,21 @@ def split_document_into_chunks(documents, chunk_size=256, overlap=20):
     return chunks
 
 # Function to create embeddings and store them in ChromaDB
-from langchain.vectorstores import Chroma
-
-def create_embeddings_and_store(chunks, api_key):
+def create_embeddings_and_store(chunks, api_key, chroma_db_path="chroma_db"):
     openai.api_key = api_key  # Set the OpenAI API key for openai library
 
     # Initialize OpenAI embeddings, passing the API key explicitly
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=api_key)
 
-    # Initialize Chroma in-memory store (avoid sqlite dependency)
-    chroma_store = Chroma(embedding_function=embeddings, persist_directory=None)  # Set persist_directory=None for in-memory mode
+    # Initialize Chroma vector store
+    chroma_store = Chroma(persist_directory=chroma_db_path,
+                          embedding_function=embeddings)
 
     # Add chunks to Chroma
     chroma_store.add_texts(texts=chunks)
+
+    # Persist the store
+    chroma_store.persist()
 
     return chroma_store
 
