@@ -13,3 +13,4 @@ chromadb
 PyPDF2
 docx2txt
 tiktoken
+langchain-community
